@@ -100,6 +100,7 @@ public class PosthogReactNativePlugin: RCTEventEmitter {
             nativeErrorTrackingAutocapture: errorTrackingConfig["nativeAutocapture"] as? Bool ?? false,
             exceptionStepsConfig: exceptionStepsConfig,
             pushConfig: pluginConfig["push"] as? [String: Any] ?? [:],
+            rageClickConfig: pluginConfig["rageClick"] as? [String: Any],
             resolve: resolve
         )
     }
@@ -134,6 +135,7 @@ public class PosthogReactNativePlugin: RCTEventEmitter {
         nativeErrorTrackingAutocapture: Bool,
         exceptionStepsConfig: [String: Any],
         pushConfig: [String: Any],
+        rageClickConfig: [String: Any]? = nil,
         resolve: RCTPromiseResolveBlock
     ) {
         if sessionId.isEmpty {
@@ -163,6 +165,21 @@ public class PosthogReactNativePlugin: RCTEventEmitter {
         }
         if let maxBytes = exceptionStepsConfig["maxBytes"] as? Int {
             config.errorTrackingConfig.exceptionSteps.maxBytes = maxBytes
+        }
+
+        if let rageClick = rageClickConfig {
+            if let enabled = rageClick["enabled"] as? Bool {
+                config.rageClickConfig.enabled = enabled
+            }
+            if let thresholdPoints = rageClick["thresholdPoints"] as? Double {
+                config.rageClickConfig.thresholdPoints = CGFloat(thresholdPoints)
+            }
+            if let timeoutInterval = rageClick["timeoutInterval"] as? Double {
+                config.rageClickConfig.timeoutInterval = timeoutInterval
+            }
+            if let minimumTapCount = rageClick["minimumTapCount"] as? Int {
+                config.rageClickConfig.minimumTapCount = minimumTapCount
+            }
         }
 
         // React Native rethrows fatal JS errors natively (RCTFatalException / ExceptionsManager).

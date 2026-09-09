@@ -220,6 +220,37 @@ export type PostHogSessionReplayConfig = {
   sampleRate?: number
 }
 
+export type PostHogRageClickConfig = {
+  /**
+   * Enable rage click detection on iOS.
+   * When false, the native SDK will not capture `$rageclick` events.
+   * iOS only — Android does not have native rage click detection.
+   *
+   * @default true
+   */
+  enabled?: boolean
+  /**
+   * Manhattan distance threshold in logical points.
+   * Taps within this distance from the previous tap are considered "in the same area".
+   *
+   * @default 30
+   */
+  thresholdPoints?: number
+  /**
+   * Maximum time interval (in seconds) between consecutive taps to count
+   * as part of the same sequence. If more than this passes, the sequence resets.
+   *
+   * @default 1.0
+   */
+  timeoutInterval?: number
+  /**
+   * Number of consecutive taps within the threshold to qualify as a rage click.
+   *
+   * @default 3
+   */
+  minimumTapCount?: number
+}
+
 export interface PostHogCustomStorage {
   getItem: (key: string) => string | null | Promise<string | null>
   setItem: (key: string, value: string) => void | Promise<void>

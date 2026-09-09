@@ -42,6 +42,7 @@ import {
   PostHogCustomAppProperties,
   PostHogCustomStorage,
   PostHogPushIdentityProvider,
+  PostHogRageClickConfig,
   PostHogSessionReplayConfig,
 } from './types'
 import { getRemoteConfigBool, getRemoteConfigNumber, isHermes, isMacOS, isValidSampleRate, isWeb } from './utils'
@@ -117,6 +118,19 @@ export interface PostHogOptions extends PostHogCoreOptions {
    * Configuration for Session Replay
    */
   sessionReplayConfig?: PostHogSessionReplayConfig
+
+  /**
+   * Configuration for native rage click detection.
+   * iOS only — Android does not have native rage click detection.
+   * Requires `@posthog/react-native-plugin`.
+   *
+   * The native SDK fires `$rageclick` events when rapid taps are detected.
+   * JS `before_send` cannot intercept these events since they originate
+   * from the native layer.
+   *
+   * @default { enabled: true, thresholdPoints: 30, timeoutInterval: 1.0, minimumTapCount: 3 }
+   */
+  rageClickConfig?: PostHogRageClickConfig
 
   /**
    * If enabled, the session id ($session_id) will be persisted across app restarts.
@@ -2604,6 +2618,7 @@ export class PostHog extends PostHogCore {
             capturePushNotificationOpened: options?.capturePushNotificationOpened ?? true,
             pushIdentityProviderEnabled,
           },
+          ...(options?.rageClickConfig && { rageClick: options.rageClickConfig }),
         }
         await OptionalReactNativePlugin.setup(String(sessionId), sdkOptions, pluginConfig)
         // Native resolves its own persisted opt-out over the config value passed above, so an
